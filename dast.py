@@ -414,7 +414,7 @@ for epoch in range(opt.niter):
         # print(label)
 
         output = netD(data.detach())
-        prob = F.log_softmax(output, dim=1)
+        prob = F.softmax(output, dim=1)
         # print(torch.sum(outputs) / 500.)
         errD_prob = mse_loss(prob, outputs, reduction='mean')
         errD_fake = criterion(output, label) + errD_prob * opt.beta
