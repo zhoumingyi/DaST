@@ -148,7 +148,7 @@ class Loss_max(nn.Module):
     def forward(self, pred, truth, proba):
         criterion_1 = nn.MSELoss()
         criterion = nn.CrossEntropyLoss()
-        pred_prob = F.log_softmax(pred, dim=1)
+        pred_prob = F.softmax(pred, dim=1)
         loss = criterion(pred, truth) + criterion_1(pred_prob, proba) * opt.beta
         # loss = criterion(pred, truth)
         final_loss = torch.exp(loss * -1)
@@ -409,12 +409,12 @@ for epoch in range(opt.niter):
             else:
                 outputs = original_net(data)
                 _, label = torch.max(outputs.data, 1)
-                outputs = F.log_softmax(outputs, dim=1)
+                outputs = F.softmax(outputs, dim=1)
             # _, label = torch.max(outputs.data, 1)
         # print(label)
 
         output = netD(data.detach())
-        prob = F.log_softmax(output, dim=1)
+        prob = F.softmax(output, dim=1)
         # print(torch.sum(outputs) / 500.)
         errD_prob = mse_loss(prob, outputs, reduction='mean')
         errD_fake = criterion(output, label) + errD_prob * opt.beta
