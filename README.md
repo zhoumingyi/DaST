@@ -20,8 +20,9 @@ If you want to train a subsitute model in Azure:
 ```python
 python dast --dataset=azure
 ```
-I have downloaded the remote model, so you do not need to employ the azure model as a service to evaluate the method.
+#Notes
+(1) I have downloaded the remote model, so you do not need to employ the azure model as a service to evaluate the method.
 
-If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. 
+(2) If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. 
 
-There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch it in arguments 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because the multi-brunch architecture of generator, the batchsize is best divisible by the number of categories. 
+(3) There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch it in arguments 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because the multi-brunch architecture of generator, the batchsize is best divisible by the number of categories. 
