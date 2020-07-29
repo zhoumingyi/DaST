@@ -13,12 +13,12 @@ This project built on Pytorch 1.0+.
 If you want to train a substitute model in MNIST:
 
 ```python
-python dast --dataset=mnist
+python dast.py --dataset=mnist
 ```
 
 If you want to train a subsitute model in Azure:
 ```python
-python dast --dataset=azure
+python dast.py --dataset=azure
 ```
 #Notes
 
