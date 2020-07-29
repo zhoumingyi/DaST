@@ -21,6 +21,7 @@ If you want to train a subsitute model in Azure:
 python dast --dataset=azure
 ```
 #Notes
+
 (1) I have downloaded the remote model, so you do not need to employ the azure model as a service to evaluate the method.
 
 (2) If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. 
