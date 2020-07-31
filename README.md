@@ -10,7 +10,7 @@ This project built on Pytorch 1.0+.
 
 # Usage:
 
-**Environment:
+**Environment:**
 
 `Pytorch 1.0+`\
 `Python 3.6`
