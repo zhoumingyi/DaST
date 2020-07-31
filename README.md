@@ -17,7 +17,7 @@ This project built on Pytorch 1.0+.
 
 This work can steal the attacked model without the requirement of any real data. If you want to evaluate the performance of DaST in terms of adversarial attacks, you can use the `evaluate.py` to do it.
 
-**Experiments of original paper:
+**Experiments of original paper:**
 
 1. Train the substitute model.
 
