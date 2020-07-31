@@ -115,10 +115,9 @@ def test_adver(net, tar_net, attack, target):
             max_iterations=12,
             targeted=opt.target)
 
-    # ----------------------------------
+    #-----------------------------------
     # Obtain the accuracy of the model
-    # ----------------------------------
-
+    #-----------------------------------
     with torch.no_grad():
         correct_netD = 0.0
         total = 0.0
@@ -134,10 +133,9 @@ def test_adver(net, tar_net, attack, target):
         print('Accuracy of the network on netD: %.2f %%' %
                 (100. * correct_netD.float() / total))
 
-    # ----------------------------------
+    #-----------------------------------
     # Obtain the attack success rate of the model
-    # ----------------------------------
-
+    #-----------------------------------
     correct = 0.0
     total = 0.0
     tar_net.eval()
@@ -175,6 +173,11 @@ def test_adver(net, tar_net, attack, target):
 
                     total += labels.size(0)
                     correct += (predicted == labels).sum()
+            adv_inputs_ori = adversary.perturb(inputs, labels)
+            L2_distance = (torch.norm(adv_inputs_ori - inputs) / torch.numel(adv_inputs_ori)).item()
+            total_L2_distance += L2_distance
+            with torch.no_grad():
+                outputs = tar_net(adv_inputs_ori)
 
     if target:
         print('Attack success rate: %.2f %%' %
@@ -201,7 +204,7 @@ elif opt.mode == 'white':
 elif opt.mode == 'dast':
     attack_net = Net_l().to(device)
     state_dict = torch.load(
-        'saved_model_2/netD_epoch_670.pth')
+        'saved_model/netD_epoch_670.pth')                         # choose your saved dast model
     attack_net = nn.DataParallel(attack_net)
     attack_net.load_state_dict(state_dict)
 
