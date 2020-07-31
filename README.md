@@ -10,6 +10,18 @@ This project built on Pytorch 1.0+.
 
 # Usage:
 
+**Environment:
+
+`Pytorch 1.0+`\
+`Python 3.6`
+
+This work can steal the attacked model without the requirement of any real data. If you want to evaluate the performance of DaST in terms of adversarial attacks, you can use the `evaluate.py` to do it.
+
+**Experiments of original paper:
+
+1. Train the substitute model.
+2. Generate the adversarial attacks by white-box attacks and transfer them to the attacked model.
+
 If you want to train a substitute model in MNIST:
 
 ```python
@@ -27,3 +39,18 @@ python dast.py --dataset=azure
 (2) If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. 
 
 (3) There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch by 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because of the multi-branch architecture of the generator, the 'batchsize' is best divisible by the number of categories.
+
+# Citation:
+If you feel this work is helpful, please cite us:
+```latex
+@inproceedings{zhou2020dast,
+  title={DaST: Data-free Substitute Training for Adversarial Attacks},
+  author={Zhou, Mingyi and Wu, Jing and Liu, Yipeng and Liu, Shuaicheng and Zhu, Ce},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={234--243},
+  year={2020}
+}
+```
+
+# Contact:
+If you have any question, please contact [Mingyi Zhou](zhoumingyi@std.uestc.edu.cn).
