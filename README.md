@@ -10,17 +10,16 @@ This project built on Pytorch 1.0+.
 
 # Usage:
 
-**Environment:
+**Environment:**
 
 `Pytorch 1.0+`\
 `Python 3.6`
 
 This work can steal the attacked model without the requirement of any real data. If you want to evaluate the performance of DaST in terms of adversarial attacks, you can use the `evaluate.py` to do it.
 
-**Experiments of original paper:
+**Experiments of original paper:**
 
 1. Train the substitute model.
-2. Generate the adversarial attacks by white-box attacks and transfer them to the attacked model.
 
 If you want to train a substitute model in MNIST:
 
@@ -32,6 +31,14 @@ If you want to train a subsitute model in Azure:
 ```python
 python dast.py --dataset=azure
 ```
+
+2. Generate the adversarial attacks by white-box attacks and transfer them to the attacked model.
+
+When the substitute model is obtained, you can use the following command to evaluate the substitute model in non-targeted attacks:
+python evaluation.py --mode=
+
+
+
 #Notes
 
 (1) I have downloaded the remote model, so you do not need to employ the azure model as a service to evaluate the method.
