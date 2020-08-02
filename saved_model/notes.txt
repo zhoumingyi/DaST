@@ -1,0 +1,1 @@
+The trained model is saved in here. If you want to evaluate the performance of DaST in terms of adversarial attacks, you can run evaluate.py.
