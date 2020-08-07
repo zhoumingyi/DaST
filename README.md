@@ -46,7 +46,7 @@ python evaluation.py --mode=dast
 
 (2) The attack success rate in the training code is just a rough estimate of attack performance, but it is fast. So you could run the evaluate.py to evaluate the performance of trained model.
 
-(3) If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. 
+(3) If you want to train a substitute model in other dataset (like CIFAR-10), you can add a CIFAR-10's model as the original_net and load the dataset. Note that in this code the output size of generator is [28, 28]. So on the CIFAR-10 dataset, the architecher of generator need to be modified, and the output size need to be [32, 32].
 
 (4) There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch by 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because of the multi-branch architecture of the generator, the 'batchsize' is best divisible by the number of categories.
 
