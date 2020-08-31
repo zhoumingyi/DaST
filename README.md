@@ -35,9 +35,9 @@ python dast.py --dataset=azure
 2. Generate the adversarial attacks by white-box attacks and transfer them to the attacked model.
 
 When the substitute model is obtained, you can use the following command to evaluate the substitute model in non-targeted attacks:
-
+```python
 python evaluation.py --mode=dast --adv=FGSM --cuda
-
+```
 
 
 #Notes
