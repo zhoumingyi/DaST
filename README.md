@@ -36,7 +36,7 @@ python dast.py --dataset=azure
 
 When the substitute model is obtained, you can use the following command to evaluate the substitute model in non-targeted attacks:
 
-python evaluation.py --mode=dast
+python evaluation.py --mode=dast --adv=FGSM --cuda
 
 
 
