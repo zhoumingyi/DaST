@@ -63,4 +63,4 @@ If you feel this work is helpful, please cite us:
 ```
 
 # Contact:
-If you have any question, please contact [Mingyi Zhou](zhoumingyi@std.uestc.edu.cn).
+If you have any question, please contact [Mingyi Zhou](mingyi.zhou@monash.edu).
