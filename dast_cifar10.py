@@ -68,7 +68,7 @@ parser.add_argument('--lr', type=float, default=0.0001, help='learning rate, def
 parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
 parser.add_argument('--cuda', default=True, action='store_true', help='enables cuda')
 parser.add_argument('--alpha', type=float, default=0.2, help='alpha')
-parser.add_argument('--beta', type=float, default=0.1, help='beta')#0.1--DasTP     0.0--DasTL
+parser.add_argument('--beta', type=float, default=0.1, help='beta')#(from 0.1 to 20.0)--DasTP     0.0--DasTL
 parser.add_argument('--G_type', type=int, default=1, help='G type')
 parser.add_argument('--save_folder', type=str, default='saved_model', help='alpha')
 opt = parser.parse_args()
