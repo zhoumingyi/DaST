@@ -12,8 +12,10 @@ This project built on Pytorch 1.0+.
 
 **Environment:**
 
-`Pytorch 1.0+`\
-`Python 3.6`
+`Pytorch 1.12.0`\
+`Python 3.9.12`\
+`Cuda: 11.3.1`\
+`GPU: A40`
 
 This work can steal the attacked model without the requirement of any real data. If you want to evaluate the performance of DaST in terms of adversarial attacks, you can use the `evaluate.py` to do it.
 
@@ -51,6 +53,8 @@ python evaluation.py --mode=dast --adv=FGSM --cuda
 (4) There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch by 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because of the multi-branch architecture of the generator, the 'batchsize' is best divisible by the number of categories.
 
 (5) Note that the training for CIFAR-10 is not stable, even I set all random seed and I don't know why. You can observe it in the log file for cifar-10. The first example is failed, the training is collapsed. The second example is better, the attack success rate increases to 80% after 50 epochs in DaST-P. 
+
+(6) Is this code, we found the performances of DaST are different on different machines. We use Cuda
 
 # Citation:
 If you feel this work is helpful, please cite us:
