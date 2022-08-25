@@ -11,6 +11,7 @@ This project built on Pytorch 1.0+.
 # Usage:
 
 **Environment:**
+Is this code, we found the performances of DaST are different on different machines, even when we set all random seeds. Here is the details of our experimental environment.
 
 `Pytorch 1.12.0`\
 `Python 3.9.12`\
@@ -54,7 +55,6 @@ python evaluation.py --mode=dast --adv=FGSM --cuda
 
 (5) Note that the training for CIFAR-10 is not stable, even I set all random seed and I don't know why. You can observe it in the log file for cifar-10. The first example is failed, the training is collapsed. The second example is better, the attack success rate increases to 80% after 50 epochs in DaST-P. 
 
-(6) Is this code, we found the performances of DaST are different on different machines. We use Cuda
 
 # Citation:
 If you feel this work is helpful, please cite us:
