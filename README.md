@@ -50,6 +50,8 @@ python evaluation.py --mode=dast --adv=FGSM --cuda
 
 (4) There are some important arguments in this code. The `alpha` controls the weight of label-control loss in (9) of the original paper. The 'beta' determines the attack scenario. If the 'beta' is 0, the attack scenario is DaST-L, if the 'beta' is not 0 (>0), the attack scenario is DaST-P. I define two types of generator architecture, you can switch by 'G_type'. It is hard to say which type is better, you can try to use them in your own dataset. Because of the multi-branch architecture of the generator, the 'batchsize' is best divisible by the number of categories.
 
+(5) Note that the training for CIFAR-10 is not stable, even I set all random seed and I don't know why. You can observe it in the log file for cifar-10. The first example is failed, the training is collapsed. The second example is better, the attack success rate increases to 80% after 50 epochs in DaST-P. 
+
 # Citation:
 If you feel this work is helpful, please cite us:
 ```latex
