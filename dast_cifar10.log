@@ -1,3 +1,6 @@
+# The training is not stable.
+# here is the first example
+
 Namespace(workers=2, batchSize=500, dataset='cifar10', niter=2000, lr=0.0001, beta1=0.5, cuda=True, alpha=0.2, beta=0.1, G_type=1, save_folder='saved_model')
 Files already downloaded and verified
 original net accuracy: 93.90 %
@@ -55,6 +58,16 @@ model saved
 [1/2000][340/500] D: 0.0148 D_prob: 0.0131 loss_imitate: 0.9854 loss_diversity: 0.0134
 [1/2000][360/500] D: 0.0036 D_prob: 0.0129 loss_imitate: 0.9964 loss_diversity: 0.0023
 [1/2000][380/500] D: 0.0033 D_prob: 0.0126 loss_imitate: 0.9968 loss_diversity: 0.0020
+
+
+
+
+
+# Here is the second example
+
+
+
+
 Namespace(workers=2, batchSize=500, dataset='cifar10', niter=2000, lr=0.0001, beta1=0.5, cuda=True, alpha=0.2, beta=0.1, G_type=1, save_folder='saved_model')
 Files already downloaded and verified
 original net accuracy: 93.90 %
