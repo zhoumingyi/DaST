@@ -6,9 +6,8 @@ import sys
 import xlwt
 import random
 import numpy as np
-from advertorch.attacks import LinfBasicIterativeAttack, CarliniWagnerL2Attack
-from advertorch.attacks import GradientSignAttack, PGDAttack
-import foolbox
+from advertorch.attacks import LinfBasicIterativeAttack, CarliniWagnerL2Attack, L2BasicIterativeAttack
+from advertorch.attacks import GradientSignAttack, PGDAttack, L2PGDAttack
 import torch
 import torchvision
 import torch.nn as nn
@@ -50,21 +49,21 @@ if opt.manualSeed is None:
 random.seed(opt.manualSeed)
 torch.manual_seed(opt.manualSeed)
 
-cudnn.benchmark = True
+cudnn.benchmark = False
 
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with \
          --cuda")
 
-testset = torchvision.datasets.MNIST(root='/data/dataset/', train=False,
-                                     download=True,
+testset = torchvision.datasets.MNIST(root='~/rm46_scratch/dataset/', train=False,
+                                     download=False,
                                      transform=transforms.Compose([
                                         transforms.ToTensor(),
                                      ]))
 
-data_list = [i for i in range(0, 10000)]
-testloader = torch.utils.data.DataLoader(testset, batch_size=1,
-                                         sampler = sp.SubsetRandomSampler(data_list), num_workers=2)
+# data_list = [i for i in range(0, 10000)]
+testloader = torch.utils.data.DataLoader(testset, batch_size=512,
+                                         shuffle=False, num_workers=16)
 
 
 device = torch.device("cuda:0" if opt.cuda else "cpu")
@@ -76,43 +75,43 @@ def test_adver(net, tar_net, attack, target):
     tar_net.eval()
     # BIM
     if attack == 'BIM':
-        adversary = LinfBasicIterativeAttack(
+        adversary = L2BasicIterativeAttack(
             net,
             loss_fn=nn.CrossEntropyLoss(reduction="sum"),
-            eps=0.25,
-            nb_iter=120, eps_iter=0.02, clip_min=0.0, clip_max=1.0,
+            eps=4.8,
+            nb_iter=500, eps_iter=0.2, clip_min=0.0, clip_max=1.0,
             targeted=opt.target)
     # PGD
     elif attack == 'PGD':
         if opt.target:
-            adversary = PGDAttack(
+            adversary = L2PGDAttack(
                 net,
                 loss_fn=nn.CrossEntropyLoss(reduction="sum"),
-                eps=0.25,
-                nb_iter=11, eps_iter=0.03, clip_min=0.0, clip_max=1.0,
+                eps=5.0,
+                nb_iter=500, eps_iter=0.2, clip_min=0.0, clip_max=1.0,
                 targeted=opt.target)
         else:
-            adversary = PGDAttack(
+            adversary = L2PGDAttack(
                 net,
                 loss_fn=nn.CrossEntropyLoss(reduction="sum"),
-                eps=0.25,
-                nb_iter=6, eps_iter=0.03, clip_min=0.0, clip_max=1.0,
+                eps=5.0,
+                nb_iter=500, eps_iter=0.2, clip_min=0.0, clip_max=1.0,
                 targeted=opt.target)
     # FGSM
     elif attack == 'FGSM':
         adversary = GradientSignAttack(
             net,
             loss_fn=nn.CrossEntropyLoss(reduction="sum"),
-            eps=0.26,
+            eps=0.2,
             targeted=opt.target)
     elif attack == 'CW':
         adversary = CarliniWagnerL2Attack(
             net,
             num_classes=10,
-            learning_rate=0.45,
+            learning_rate=0.05,
             # loss_fn=nn.CrossEntropyLoss(reduction="sum"),
             binary_search_steps=10,
-            max_iterations=12,
+            max_iterations=100,
             targeted=opt.target)
 
     #-----------------------------------
@@ -138,8 +137,9 @@ def test_adver(net, tar_net, attack, target):
     #-----------------------------------
     correct = 0.0
     total = 0.0
-    tar_net.eval()
     total_L2_distance = 0.0
+    att_num = 0.
+    acc_num = 0.
     for data in testloader:
         inputs, labels = data
         inputs = inputs.to(device)
@@ -148,50 +148,63 @@ def test_adver(net, tar_net, attack, target):
         _, predicted = torch.max(outputs.data, 1)
         if target:
             # randomly choose the specific label of targeted attack
-            labels = torch.randint(0, 9, (1,)).to(device)
+            labels = torch.randint(0, 9, (inputs.size(0),)).to(device)
             # test the images which are not classified as the specific label
-            if predicted != labels:
-                # print(total)
-                adv_inputs_ori = adversary.perturb(inputs, labels)
-                L2_distance = (torch.norm(adv_inputs_ori - inputs)).item()
-                total_L2_distance += L2_distance
-                with torch.no_grad():
-                    outputs = tar_net(adv_inputs_ori)
-                    _, predicted = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    correct += (predicted == labels).sum()
-        else:
-            # test the images which are classified correctly
-            if predicted == labels:
-                # print(total)
-                adv_inputs_ori = adversary.perturb(inputs, labels)
-                L2_distance = (torch.norm(adv_inputs_ori - inputs)).item()
-                total_L2_distance += L2_distance
-                with torch.no_grad():
-                    outputs = tar_net(adv_inputs_ori)
-                    _, predicted = torch.max(outputs.data, 1)
 
-                    total += labels.size(0)
-                    correct += (predicted == labels).sum()
+            ones = torch.ones_like(predicted)
+            zeros = torch.zeros_like(predicted)
+            acc_sign = torch.where(predicted == labels, zeros, ones)
+            acc_num += acc_sign.sum().float()
             adv_inputs_ori = adversary.perturb(inputs, labels)
-            L2_distance = (torch.norm(adv_inputs_ori - inputs) / torch.numel(adv_inputs_ori)).item()
-            total_L2_distance += L2_distance
+            L2_distance = (adv_inputs_ori - inputs).squeeze()
+            L2_distance = (torch.norm(L2_distance, dim=list(range(1, inputs.squeeze().dim())))).data
+            L2_distance = L2_distance * acc_sign
+            total_L2_distance += L2_distance.sum()
+            with torch.no_grad():
+                # predicted = cal_azure(clf, adv_inputs_ori)
+                outputs = tar_net(adv_inputs_ori)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum()
+                att_sign = torch.where(predicted == labels, ones, zeros)
+                att_sign = att_sign + acc_sign
+                att_sign = torch.where(att_sign == 2, ones, zeros)
+                att_num += att_sign.sum().float()
+        else:
+            ones = torch.ones_like(predicted)
+            zeros = torch.zeros_like(predicted)
+            acc_sign = torch.where(predicted == labels, ones, zeros)
+            acc_num += acc_sign.sum().float()
+            adv_inputs_ori = adversary.perturb(inputs, labels)
+            L2_distance = (adv_inputs_ori - inputs).squeeze()
+            L2_distance = (torch.norm(L2_distance, dim=list(range(1, inputs.squeeze().dim())))).data
+            L2_distance = L2_distance * acc_sign
+            total_L2_distance += L2_distance.sum()
             with torch.no_grad():
                 outputs = tar_net(adv_inputs_ori)
+                _, predicted = torch.max(outputs.data, 1)
+
+                total += labels.size(0)
+                correct += (predicted == labels).sum()
+                att_sign = torch.where(predicted == labels, zeros, ones)
+                att_sign = att_sign + acc_sign
+                att_sign = torch.where(att_sign == 2, ones, zeros)
+                att_num += att_sign.sum().float()
 
     if target:
         print('Attack success rate: %.2f %%' %
-              (100. * correct.float() / total))
+              ((att_num / acc_num * 100.0)))
     else:
         print('Attack success rate: %.2f %%' %
-              (100.0 - 100. * correct.float() / total))
-    print('l2 distance:  %.4f ' % (total_L2_distance / total))
+              (att_num / acc_num * 100.0))
+    print('l2 distance:  %.4f ' % (total_L2_distance / acc_num))
 
 
 target_net = Net_m().to(device)
 state_dict = torch.load(
     'pretrained/net_m.pth')
 target_net.load_state_dict(state_dict)
+target_net = nn.DataParallel(target_net)
 target_net.eval()
 
 if opt.mode == 'black':
@@ -204,8 +217,9 @@ elif opt.mode == 'white':
 elif opt.mode == 'dast':
     attack_net = Net_l().to(device)
     state_dict = torch.load(
-        'saved_model/netD_epoch_670.pth')                         # choose your saved dast model
-    attack_net = nn.DataParallel(attack_net)
+        'saved_model/netD_epoch_848.pth')                         # choose your saved dast model
+    # attack_net = nn.DataParallel(attack_net)
     attack_net.load_state_dict(state_dict)
+    attack_net = nn.DataParallel(attack_net)
 
 test_adver(attack_net, target_net, opt.adv, opt.target)
