@@ -27,7 +27,7 @@ import torchvision.transforms as transforms
 import torch.utils.data.sampler as sp
 # from net import Net_s, Net_m, Net_l
 from torchvision.models import resnet18, ResNet18_Weights
-from vgg_sun import VGG
+from vgg import VGG
 from resnet import ResNet18
 
 cudnn.benchmark = True
